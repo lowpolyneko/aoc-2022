@@ -1,4 +1,3 @@
-use std::cmp;
 use std::env;
 use std::fs;
 use std::io::{self, BufRead};
@@ -11,15 +10,19 @@ fn main() {
 
     /* read file as iterated list of strings */
     let logsheet = reader.lines().take_while(Result::is_ok).map(Result::unwrap);
-    let mut high_score = 0;
+    let mut top_elves: Vec<i32> = Vec::new();
     let mut score = 0;
 
     logsheet.for_each(|s| score = if s.is_empty() {
-        high_score = cmp::max(high_score, score);
+        top_elves.push(score);
         0
     } else {
         score + s.parse::<i32>().unwrap()
     });
 
-    println!("High score: {}", high_score)
+    /* ending elf */
+    top_elves.push(score);
+
+    top_elves.sort_by(|a, b| b.cmp(a));
+    println!("High score: {}, Top three: {}", top_elves[0], top_elves[..3].iter().sum::<i32>())
 }
